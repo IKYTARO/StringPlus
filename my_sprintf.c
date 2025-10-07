@@ -1,3 +1,3 @@
-#include <my_string.h>
+#include "my_string.h"
 
-int sprintf(char *str, char const *format, ...) {}
+int my_sprintf(char *str, char const *format, ...) {}

@@ -1,51 +1,50 @@
 #ifndef MY_STRING_H
 #define MY_STRING_H
 
-#include <stdlib.h>
-
-#define size_t long unsigned int
 #define NULL ((void *)0)
 
-void *memchr(void const *str, int c, size_t n);
+typedef unsigned long size_t;
 
-int memcmp(void const *str1, void const *str2, size_t n);
+void *my_memchr(void const *str, int c, size_t n);
 
-void *memcpy(void *dest, void const *src, size_t n);
+int my_memcmp(void const *str1, void const *str2, size_t n);
 
-void *memset(void *str, int c, size_t n);
+void *my_memcpy(void *dest, void const *src, size_t n);
 
-char *strncat(char *dest, char const *src, size_t n);
+void *my_memset(void *str, int c, size_t n);
 
-char *strchr(char const *str, int c);
+char *my_strncat(char *dest, char const *src, size_t n);
 
-int strncmp(char const *str1, char const *str2, size_t n);
+char *my_strchr(char const *str, int c);
 
-char *strncpy(char *dest, char const *src, size_t n);
+int my_strncmp(char const *str1, char const *str2, size_t n);
 
-size_t strcspn(char const *str1, char const *str2);
+char *my_strncpy(char *dest, char const *src, size_t n);
 
-char *strerror(int errnum);
+size_t my_strcspn(char const *str1, char const *str2);
 
-size_t strlen(char const *str);
+char *my_strerror(int errnum);
 
-char *strpbrk(char const *str1, char const *str2);
+size_t my_strlen(char const *str);
 
-char *strrchr(char const *str, int c);
+char *my_strpbrk(char const *str1, char const *str2);
 
-char *strstr(char const *haystack, char const *needle);
+char *my_strrchr(char const *str, int c);
 
-char *strtok(char *str, char const *delim);
+char *my_strstr(char const *haystack, char const *needle);
 
-void *to_upper(char const *str);
+char *my_strtok(char *str, char const *delim);
 
-void *to_lower(char const *str);
+void *my_to_upper(char const *str);
 
-void *insert(char const *src, char const *str, size_t start_index);
+void *my_to_lower(char const *str);
 
-void *trim(char const *src, char const *trim_chars);
+void *my_insert(char const *src, char const *str, size_t start_index);
 
-int sprintf(char *str, char const *format, ...);
+void *my_trim(char const *src, char const *trim_chars);
 
-int sscanf(char const *str, char const *format, ...);
+int my_sprintf(char *str, char const *format, ...);
+
+int my_sscanf(char const *str, char const *format, ...);
 
 #endif
