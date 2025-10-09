@@ -1,5 +1,7 @@
 #include "my_string.h"
 
+#include <stdio.h>
+
 void *my_memchr(void const *str, int c, size_t n) {}
 
 int my_memcmp(void const *str1, void const *str2, size_t n) {}
@@ -14,28 +16,25 @@ char *my_strchr(char const *str, int c) {}
 
 int my_strncmp(char const *str1, char const *str2, size_t n) {
     int result = 0;
-    if (n > 0) {
-        while (*str1 && *str2 && n > 0 && *str1 == *str2) {
-            str1++;
-            str2++;
-            n--;
+    for (size_t id = 0; id < n; id++) {
+        if (str1[id] != str2[id]) {
+            result = (unsigned char)str1[id] - (unsigned char)str2[id];
+            break;
+        } else if (str1[id] == '\0') {
+            result = 0;
+            break;
         }
-        result = *str1 - *str2;
     }
     return result;
 }
 
 char *my_strncpy(char *dest, char const *src, size_t n) {
-    if (n > 0) {
-        while (n > 0) {
-            if (*src)
-                *dest = *src;
-            else
-                *dest = '\0';
-            dest++;
-            src++;
-            n--;
-        }
+    size_t id = 0;
+    for (; id < n && src[id] != '\0'; id++) {
+        dest[id] = src[id];
+    }
+    for (; id < n; id++) {
+        dest[id] = '\0';
     }
     return dest;
 }
