@@ -1,6 +1,8 @@
 #include "my_string.h"
 
-#include <stdio.h>
+#include <stdlib.h>
+
+#include "utils.h"
 
 void *my_memchr(void const *str, int c, size_t n) {}
 
@@ -29,13 +31,23 @@ int my_strncmp(char const *str1, char const *str2, size_t n) {
 }
 
 char *my_strncpy(char *dest, char const *src, size_t n) {
+    if (n == 0) return dest;
+
+    size_t src_len = my_strlen(src);
+    char *src_copy = (char *)calloc(src_len + 1, sizeof(char));
+    write_data_to(src_copy, src);
+    src_copy[src_len] = '\0';
+
     size_t id = 0;
     for (; id < n && src[id] != '\0'; id++) {
-        dest[id] = src[id];
+        dest[id] = src_copy[id];
     }
     for (; id < n; id++) {
         dest[id] = '\0';
     }
+
+    free(src_copy);
+
     return dest;
 }
 

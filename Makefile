@@ -4,7 +4,7 @@ TFLAGS  = -lcheck -lm -lsubunit
 ARCHIVE = ar
 ARFLAGS = rcs
 
-SOURCES = my_string.c my_sscanf.c my_sprintf.c utils.c
+SOURCES = my_string.c my_sscanf.c my_sprintf.c utils.c specifier_parser.c specifier_handler.c
 OBJECTS = $(SOURCES:.c=.o)
 TESTSRC = ./tests/*.c
 

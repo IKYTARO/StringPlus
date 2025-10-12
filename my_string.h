@@ -1,9 +1,7 @@
 #ifndef MY_STRING_H
 #define MY_STRING_H
 
-#define NULL ((void *)0)
-
-typedef unsigned long size_t;
+#include "my_types.h"
 
 void *my_memchr(void const *str, int c, size_t n);
 

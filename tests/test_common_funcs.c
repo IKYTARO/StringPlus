@@ -4,17 +4,17 @@
 #include <string.h>
 
 START_TEST(test_strlen_basic) {
-    ck_assert_int_eq(my_strlen(""), 0);
-    ck_assert_int_eq(my_strlen("12"), 2);
-    ck_assert_int_eq(my_strlen("hello"), 5);
-    ck_assert_int_eq(my_strlen("veryVeryVeryLongWord"), 20);
+    ck_assert_int_eq(my_strlen(""), strlen(""));
+    ck_assert_int_eq(my_strlen("12"), strlen("12"));
+    ck_assert_int_eq(my_strlen("hello"), strlen("hello"));
+    ck_assert_int_eq(my_strlen("veryVeryVeryLongWord"), strlen("veryVeryVeryLongWord"));
 }
 END_TEST
 
 START_TEST(test_strlen_with_spaces) {
-    ck_assert_int_eq(my_strlen("hello world"), 11);
-    ck_assert_int_eq(my_strlen("  "), 2);
-    ck_assert_int_eq(my_strlen("a, \t, c, d  "), 12);
+    ck_assert_int_eq(my_strlen("hello world"), strlen("hello world"));
+    ck_assert_int_eq(my_strlen("  "), strlen("  "));
+    ck_assert_int_eq(my_strlen("a, \t, c, d  "), strlen("a, \t, c, d  "));
 }
 END_TEST
 
@@ -55,17 +55,73 @@ START_TEST(test_strncmp_lengths) {
 END_TEST
 
 START_TEST(test_strncpy_basic) {
-    char dest[10];
-    my_strncpy(dest, "hello", 6);
-    ck_assert_str_eq(dest, "hello");
+    char dest_my[20], dest_std[20];
+    char src[] = "Hello World";
+    
+    my_strncpy(dest_my, src, 12);
+    strncpy(dest_std, src, 12);
+    ck_assert_mem_eq(dest_my, dest_std, 12);
+    
+    my_strncpy(dest_my, src, 5);
+    strncpy(dest_std, src, 5);
+    ck_assert_mem_eq(dest_my, dest_std, 5);
+    
+    my_strncpy(dest_my, "", 5);
+    strncpy(dest_std, "", 5);
+    ck_assert_mem_eq(dest_my, dest_std, 5);
+    
+    dest_my[0] = 'X';
+    dest_std[0] = 'X';
+
+    my_strncpy(dest_my, src, 0);
+    strncpy(dest_std, src, 0);
+    ck_assert_int_eq(dest_my[0], dest_std[0]);
+    
+    my_strncpy(dest_my, "A", 1);
+    strncpy(dest_std, "A", 1);
+    ck_assert_mem_eq(dest_my, dest_std, 1);
+    
+    char test_src[] = "Hi";
+    char test_dest_my[5], test_dest_std[5];
+
+    my_strncpy(test_dest_my, test_src, 4);
+    strncpy(test_dest_std, test_src, 4);
+    ck_assert_mem_eq(test_dest_my, test_dest_std, 4);
 }
 END_TEST
 
 START_TEST(test_strncpy_partial) {
-    char dest[5] = "xxxxx";
-    my_strncpy(dest, "hello world", 4);
-    dest[4] = '\0';
-    ck_assert_str_eq(dest, "hell");
+    char dest_my[20], dest_std[20];
+    char src[] = "Test";
+    
+    my_strncpy(dest_my, src, 20);
+    strncpy(dest_std, src, 20);
+    ck_assert_mem_eq(dest_my, dest_std, 20);
+    
+    char src_with_null[] = "AB\0CD";
+    my_strncpy(dest_my, src_with_null, 5);
+    strncpy(dest_std, src_with_null, 5);
+    ck_assert_mem_eq(dest_my, dest_std, 5);
+
+    char overlap_my[] = "OverlapTest";
+    char overlap_std[] = "OverlapTest";
+    my_strncpy(overlap_my + 3, overlap_my, 5);
+    strncpy(overlap_std + 3, overlap_std, 5);
+    ck_assert_mem_eq(overlap_my, overlap_std, 11);
+    
+    char buffer_my[] = "XXXXXXXXXX";
+    char buffer_std[] = "XXXXXXXXXX";
+    my_strncpy(buffer_my + 2, "YY", 2);
+    strncpy(buffer_std + 2, "YY", 2);
+    ck_assert_mem_eq(buffer_my, buffer_std, 10);
+
+    my_strncpy(dest_my, "\n\t\xFF", 3);
+    strncpy(dest_std, "\n\t\xFF", 3);
+    ck_assert_mem_eq(dest_my, dest_std, 3);
+    
+    char *result_my = my_strncpy(dest_my, "Hello", 5);
+    char *result_std = strncpy(dest_std, "Hello", 5);
+    ck_assert_mem_eq(result_my, result_std, 5);
 }
 END_TEST
 
@@ -83,7 +139,7 @@ Suite *test_common_functions(void) {
     tcase_add_test(tc_strncpy, test_strncpy_basic);
     tcase_add_test(tc_strncpy, test_strncpy_partial);
 
-    Suite *common_funcs_suite = suite_create("Common Suite");
+    Suite *common_funcs_suite = suite_create("Common Functions Suite");
     suite_add_tcase(common_funcs_suite, tc_strlen);
     suite_add_tcase(common_funcs_suite, tc_strncmp);
     suite_add_tcase(common_funcs_suite, tc_strncpy);
