@@ -41,8 +41,8 @@ void *my_insert(char const *src, char const *str, size_t start_index);
 
 void *my_trim(char const *src, char const *trim_chars);
 
-int my_sprintf(char *str, char const *format, ...);
+int my_sprintf(char *str, char const *format, ...) __attribute__((format(printf, 2, 3)));
 
-int my_sscanf(char const *str, char const *format, ...);
+int my_sscanf(char const *str, char const *format, ...) __attribute__((format(printf, 2, 3)));
 
 #endif

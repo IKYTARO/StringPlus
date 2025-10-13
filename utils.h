@@ -11,4 +11,6 @@ bool skip_spaces(char const *string, char const *format);
 
 int write_data_to(char *dst, char const *data);
 
+void integer_to_string(int number, char *string);
+
 #endif
