@@ -2,7 +2,8 @@
 
 #include <stdlib.h>
 
-#include "my_types.h"
+#include "utils.h"
+#include "../my_types.h"
 
 static char *handle_percent() {
     char *result = (char *)calloc(1, sizeof(char));
@@ -12,7 +13,11 @@ static char *handle_percent() {
 
 static char *handle_char(format_specifier_type const *specifier, va_list arg_pointer) {}
 
-static char *handle_integer(format_specifier_type const *specifier, va_list arg_pointer) {}
+static char *handle_integer(format_specifier_type const *specifier, va_list arg_pointer) {
+    char *result = (char *)calloc(10, sizeof(char));
+    integer_to_string(va_arg(arg_pointer, int), result);
+    return result;
+}
 
 static char *handle_float(format_specifier_type const *specifier, va_list arg_pointer) {}
 

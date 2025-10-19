@@ -37,17 +37,23 @@ static void read_flags(char const *string, int *position, flags_type *flags) {
     }
 }
 
-static bool read_number(char const *string, int *position, int *value) {
+static bool read_number(char const *string, int *position, va_list arg_pointer, int *value) {
     bool value_overflow = false;
-    while (is_digit(string[*position])) {
-        char digit = string[*position];
-        if (*value > INT_MAX / 10 || (*value == INT_MAX / 10 && digit > INT_MAX % 10)) {
-            value_overflow = true;
-            (*position)++;
-            continue;
-        }
-        *value = (*value) * 10 + (digit - '0');
+
+    if (string[*position] == '*') {
+        *value = va_arg(arg_pointer, int);
         (*position)++;
+    } else {
+        while (is_digit(string[*position])) {
+            char digit = string[*position];
+            if (*value > INT_MAX / 10 || (*value == INT_MAX / 10 && digit > INT_MAX % 10)) {
+                value_overflow = true;
+                (*position)++;
+                continue;
+            }
+            *value = (*value) * 10 + (digit - '0');
+            (*position)++;
+        }
     }
 
     return !value_overflow;
@@ -123,25 +129,26 @@ format_specifier_type *make_format_specifier() {
 
 void free_format_specifier(format_specifier_type *specifier) { free(specifier); }
 
-bool parse_format_specifier(char const *format, int *spec_pos, format_specifier_type *specifier) {
+bool parse_format_specifier(char const *format, int *spec_pos, va_list arg_pointer, format_specifier_type *specifier) {
+    int initial_specifier_pos = *spec_pos;
+    bool parsing_success = true;
+
     reset_format_specifier(specifier);
-
     read_flags(format, spec_pos, &specifier->flags);
-
-    bool parsing_status = read_number(format, spec_pos, &specifier->width);
-
-    if (parsing_status && format[*spec_pos] == '.') {
+    parsing_success = read_number(format, spec_pos, arg_pointer, &specifier->width);
+    if (parsing_success && format[*spec_pos] == '.') {
         (*spec_pos)++;
-        parsing_status = read_number(format, spec_pos, &specifier->precision);
+        parsing_success = read_number(format, spec_pos, arg_pointer, &specifier->precision);
+    }
+    if (parsing_success) {
+        parsing_success = read_length(format, spec_pos, &specifier->length);
+    }
+    if (parsing_success) {
+        parsing_success = read_converter(format, spec_pos, &specifier->converter);
+    }
+    if (!parsing_success) {
+        *spec_pos = initial_specifier_pos;
     }
 
-    if (parsing_status) {
-        parsing_status = read_length(format, spec_pos, &specifier->length);
-    }
-
-    if (parsing_status) {
-        parsing_status = read_converter(format, spec_pos, &specifier->converter);
-    }
-
-    return parsing_status;
+    return parsing_success;
 }

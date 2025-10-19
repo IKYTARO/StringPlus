@@ -3,7 +3,9 @@
 
 #include <check.h>
 
-Suite *test_common_functions(void);
-Suite *test_sprintf(void);
+Suite *suite_strlen(void);
+Suite *suite_strncmp(void);
+Suite *suite_strncpy(void);
+Suite *suite_sprintf(void);
 
 #endif

@@ -1,6 +1,6 @@
 #include "utils.h"
 
-#include "my_string.h"
+#include "../my_string.h"
 
 bool is_space(char const symbol) { return (symbol == ' ' || symbol == '\t'); }
 

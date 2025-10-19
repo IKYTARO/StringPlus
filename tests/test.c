@@ -1,16 +1,14 @@
 #include "test.h"
 
 int main(void) {
-	Suite *common_suite = test_common_functions();
-	Suite *sprintf_suite = test_sprintf();
+    Suite *suite_array[] = {suite_strlen(), suite_strncmp(), suite_strncpy(), suite_sprintf(), NULL};
 
-	SRunner *runner = srunner_create(common_suite);
-	srunner_add_suite(runner, sprintf_suite);
-	
-    srunner_set_fork_status(runner, CK_NOFORK);
-	srunner_run_all(runner, CK_NORMAL);
-	
-	srunner_free(runner);
-	
-	return 0;
+    for (int i = 0; suite_array[i] != NULL; i++) {
+        SRunner *runner = srunner_create(suite_array[i]);
+        srunner_set_fork_status(runner, CK_NOFORK);
+        srunner_run_all(runner, CK_NORMAL);
+        srunner_free(runner);
+    }
+
+    return 0;
 }

@@ -2,6 +2,7 @@
 #define SPECIFIER_PARSER_H
 
 #include <stdbool.h>
+#include <stdarg.h>
 
 typedef struct {
     bool left;
@@ -25,6 +26,6 @@ format_specifier_type *make_format_specifier();
 
 void free_format_specifier(format_specifier_type *specifier);
 
-bool parse_format_specifier(char const *format, int *spec_pos, format_specifier_type *specifier);
+bool parse_format_specifier(char const *format, int *spec_pos, va_list arg_pointer, format_specifier_type *specifier);
 
 #endif
