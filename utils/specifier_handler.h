@@ -4,7 +4,8 @@
 #include <stdarg.h>
 
 #include "specifier_parser.h"
+#include "../my_types.h"
 
-char *handle_format_specifier(format_specifier_type const *specifier, va_list arg_pointer);
+int handle_format_specifier(format_specifier_type const *specifier, va_list arg_pointer, char *buffer, size_t buff_size);
 
 #endif

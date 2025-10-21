@@ -42,7 +42,7 @@ static void reverse(char *string) {
     }
 }
 
-void integer_to_string(int number, char *string) {
+int integer_to_string(int number, char *string) {
     int position = 0, sign = number;
 
     if (sign < 0) number = -number;
@@ -57,4 +57,5 @@ void integer_to_string(int number, char *string) {
     }
     string[position] = '\0';
     reverse(string);
+    return (position - 1);
 }
