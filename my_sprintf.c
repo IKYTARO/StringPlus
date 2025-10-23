@@ -1,8 +1,7 @@
 #include <stdlib.h>
 
 #include "my_string.h"
-#include "utils/specifier_handler.h"
-#include "utils/utils.h"
+#include "format_specifier/specifier_handler.h"
 
 #define BUFF_MAX_SIZE 1024
 
@@ -19,12 +18,9 @@ int my_sprintf(char *str, char const *format, ...) {
             position++;
             if (parse_format_specifier(format, &position, arg_pointer, specifier)) {
                 char formatted_string[BUFF_MAX_SIZE];
-                int written_chars = handle_format_specifier(specifier, arg_pointer, formatted_string, BUFF_MAX_SIZE);
+                int written_chars = handle_format_specifier(specifier, arg_pointer, formatted_string);
                 my_strncpy(str, formatted_string, written_chars);
                 str += written_chars;
-            } else {
-                *str = format[position - 1];
-                str++;
             }
         } else {
             *str = format[position];

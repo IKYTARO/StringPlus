@@ -8,7 +8,7 @@ ARCH_FLAGS  = rcs
 OBJ_DIR   = object_files
 COV_DIR   = coverage_report
 TEST_DIR  = tests
-UTILS_DIR = utils
+UTILS_DIR = format_specifier
 
 SOURCES = $(wildcard *.c $(UTILS_DIR)/*.c)
 OBJECTS = $(addprefix $(OBJ_DIR)/,$(notdir $(SOURCES:.c=.o)))
@@ -21,24 +21,25 @@ STATIC_LIB = my_string.a
 
 $(OBJ_DIR)/%.o: %.c
 	$(shell mkdir -p $(OBJ_DIR))
-	$(COMPILER) $(C_FLAGS) $(GCOV_FLAGS) -c $< -o $@
+	$(COMPILER) $(C_FLAGS) -c $< -o $@
 
-$(OBJ_DIR)/%.o: utils/%.c
+$(OBJ_DIR)/%.o: $(UTILS_DIR)/%.c
 	$(shell mkdir -p $(OBJ_DIR))
-	$(COMPILER) $(C_FLAGS) $(GCOV_FLAGS) -c $< -o $@
+	$(COMPILER) $(C_FLAGS) -c $< -o $@
 
 $(STATIC_LIB): $(OBJECTS)
 	$(ARCHIVER) $(ARCH_FLAGS) $@ $(OBJECTS) 
 	ranlib $(STATIC_LIB)
 
 $(TEST_TARGET): $(STATIC_LIB)
-	$(COMPILER) $(C_FLAGS) $(GCOV_FLAGS) $(TESTSRC) $(CHECK_FLAGS) -o $(TEST_TARGET) $(STATIC_LIB)
+	$(COMPILER) $(C_FLAGS) $(TESTSRC) $(CHECK_FLAGS) -o $(TEST_TARGET) $(STATIC_LIB)
 
 library: $(STATIC_LIB)
 
 test: $(TEST_TARGET)
 	./$(TEST_TARGET) > $(TESTING_LOG)
 
+gcov_report: C_FLAGS += $(GCOV_FLAGS)
 gcov_report: $(TEST_TARGET)
 	$(shell mkdir -p $(COV_DIR))
 	./$(TEST_TARGET)
@@ -60,10 +61,10 @@ clean:
 rebuild:
 
 format:
-	clang-format -i *.c *.h $(TEST_DIR)/test.h $(TEST_DIR)/test.c
+	clang-format -i *.c *.h $(UTILS_DIR)/*.c $(UTILS_DIR)/*.h $(TEST_DIR)/test.h $(TEST_DIR)/test.c
 
 check-format:
-	clang-format -n *.c *.h $(TEST_DIR)/test.h $(TEST_DIR)/test.c 
+	clang-format -n *.c *.h $(UTILS_DIR)/*.c $(UTILS_DIR)/*.h $(TEST_DIR)/test.h $(TEST_DIR)/test.c 
 
 cppcheck:
 	cppcheck --enable=all --suppress=missingIncludeSystem .

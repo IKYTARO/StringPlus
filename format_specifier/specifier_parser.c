@@ -3,19 +3,27 @@
 #include <limits.h>
 #include <stdlib.h>
 
-#include "utils.h"
+static bool is_digit(char const symbol) { return (symbol >= '0' && symbol <= '9'); }
 
-static bool is_flag(char const symbol) { return (symbol == '-' || symbol == '+' || symbol == ' '); }
+static bool is_flag(char const symbol) {
+    return (symbol == '-' || symbol == '+' || symbol == ' ' || symbol == '0' || symbol == '#');
+}
 
 static void reset_flags(flags_type *flags) {
     flags->left = false;
     flags->sign = false;
     flags->space = false;
+    flags->zero = false;
+    flags->hash = false;
 }
 
 static bool is_converter(char const symbol) {
     return (symbol == 'c' || symbol == 'd' || symbol == 'f' || symbol == 's' || symbol == 'u' ||
             symbol == '%');
+}
+
+static bool is_numerical_converter(converter_type converter) {
+    return (converter == Integer || converter == Unsigned || converter == Float);
 }
 
 static void read_flags(char const *string, int *position, flags_type *flags) {
@@ -29,6 +37,12 @@ static void read_flags(char const *string, int *position, flags_type *flags) {
                 break;
             case ' ':
                 flags->space = true;
+                break;
+            case '0':
+                flags->zero = true;
+                break;
+            case '#':
+                flags->hash = true;
                 break;
             default:
                 break;
@@ -116,9 +130,21 @@ static void reset_format_specifier(format_specifier_type *specifier) {
     if (specifier) {
         reset_flags(&specifier->flags);
         specifier->width = 0;
-        specifier->precision = 0;
+        specifier->precision = -1;
         specifier->length = NoneLen;
         specifier->converter = NoneConv;
+    }
+}
+
+static void normalize_format_specifier(format_specifier_type *specifier) {
+    if (specifier->flags.left) specifier->flags.zero = false;
+    if (specifier->precision >= 0) {
+        if (is_numerical_converter(specifier->converter)) {
+            specifier->flags.zero = false;
+        }
+    }
+    if (specifier->flags.sign) {
+        specifier->flags.space = false;
     }
 }
 
@@ -129,7 +155,8 @@ format_specifier_type *make_format_specifier() {
 
 void free_format_specifier(format_specifier_type *specifier) { free(specifier); }
 
-bool parse_format_specifier(char const *format, int *spec_pos, va_list arg_pointer, format_specifier_type *specifier) {
+bool parse_format_specifier(char const *format, int *spec_pos, va_list arg_pointer,
+                            format_specifier_type *specifier) {
     int initial_specifier_pos = *spec_pos;
     bool parsing_success = true;
 
@@ -138,6 +165,7 @@ bool parse_format_specifier(char const *format, int *spec_pos, va_list arg_point
     parsing_success = read_number(format, spec_pos, arg_pointer, &specifier->width);
     if (parsing_success && format[*spec_pos] == '.') {
         (*spec_pos)++;
+        specifier->precision = 0;
         parsing_success = read_number(format, spec_pos, arg_pointer, &specifier->precision);
     }
     if (parsing_success) {
@@ -146,6 +174,7 @@ bool parse_format_specifier(char const *format, int *spec_pos, va_list arg_point
     if (parsing_success) {
         parsing_success = read_converter(format, spec_pos, &specifier->converter);
     }
+    normalize_format_specifier(specifier);
     if (!parsing_success) {
         *spec_pos = initial_specifier_pos;
     }
