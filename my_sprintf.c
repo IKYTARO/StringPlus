@@ -1,7 +1,7 @@
 #include <stdlib.h>
 
-#include "my_string.h"
 #include "format_specifier/specifier_handler.h"
+#include "my_string.h"
 
 #define BUFF_MAX_SIZE 1024
 
