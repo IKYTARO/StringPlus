@@ -1,5 +1,3 @@
-#include <stdlib.h>
-
 #include "format_specifier/specifier_handler.h"
 #include "my_string.h"
 
