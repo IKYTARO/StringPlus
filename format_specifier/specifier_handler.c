@@ -132,7 +132,26 @@ static int handle_percent(format_specifier_type const *, va_list, char *buffer) 
     return 1;
 }
 
-static int handle_char(format_specifier_type const *specifier, va_list arg_pointer, char *buffer) {}
+static int handle_char(format_specifier_type const *specifier, va_list arg_pointer, char *buffer) {
+    char symbol = (char)va_arg(arg_pointer, unsigned);
+    int written_chars = 0;
+
+    if (specifier->flags.left) {
+        buffer[written_chars] = symbol;
+        written_chars++;
+        if (specifier->width > 1) {
+            written_chars += apply_alignment(buffer, written_chars, ' ', specifier->width - 1);
+        }
+    } else {
+        if (specifier->width > 1) {
+            written_chars += apply_alignment(buffer, written_chars, ' ', specifier->width - 1);
+        }
+        buffer[written_chars] = symbol;
+        written_chars++;
+    }
+    buffer[written_chars] = '\0';
+    return written_chars;
+}
 
 static int handle_integer(format_specifier_type const *specifier, va_list arg_pointer, char *buffer) {
     argument_type argumnet = prepare_argument(specifier, arg_pointer);
