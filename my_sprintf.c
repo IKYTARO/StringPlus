@@ -19,11 +19,7 @@ int my_sprintf(char *str, char const *format, ...) {
                 int written_chars = handle_format_specifier(specifier, arg_pointer, formatted_string);
                 if (written_chars != ERROR_RETURN) {
                     str += copy_buff(str, formatted_string, written_chars);
-                } else {
-                    return ERROR_RETURN;
                 }
-            } else {
-                return ERROR_RETURN;
             }
         } else {
             *str = format[position];
