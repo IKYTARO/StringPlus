@@ -1,11 +1,9 @@
-#include "test.h"
-#include "../my_string.h"
-
 #include <string.h>
 
-START_TEST(test_strlen_empty) {
-    ck_assert_int_eq(my_strlen(""), strlen(""));
-}
+#include "../my_string.h"
+#include "test.h"
+
+START_TEST(test_strlen_empty) { ck_assert_int_eq(my_strlen(""), strlen("")); }
 END_TEST
 
 START_TEST(test_strlen_single_char) {
@@ -31,7 +29,7 @@ END_TEST
 
 START_TEST(test_strlen_long_strings) {
     ck_assert_int_eq(my_strlen("veryVeryVeryLongWord"), strlen("veryVeryVeryLongWord"));
-    ck_assert_int_eq(my_strlen("ThisIsAVeryLongStringForTestingPurposes"), 
+    ck_assert_int_eq(my_strlen("ThisIsAVeryLongStringForTestingPurposes"),
                      strlen("ThisIsAVeryLongStringForTestingPurposes"));
 }
 END_TEST
@@ -73,7 +71,7 @@ START_TEST(test_strlen_max_length) {
     char long_str[1024];
     memset(long_str, 'a', sizeof(long_str) - 1);
     long_str[sizeof(long_str) - 1] = '\0';
-    
+
     ck_assert_int_eq(my_strlen(long_str), strlen(long_str));
 }
 END_TEST

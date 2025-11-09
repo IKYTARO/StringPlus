@@ -1,7 +1,7 @@
-#include "test.h"
-#include "../my_string.h"
-
 #include <string.h>
+
+#include "../my_string.h"
+#include "test.h"
 
 // TODO: Добавьте достаточное количество тестов для покрытия функции
 

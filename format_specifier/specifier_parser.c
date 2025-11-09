@@ -19,11 +19,16 @@ static void reset_flags(flags_type *flags) {
 
 static bool is_converter(char const symbol) {
     return (symbol == 'c' || symbol == 'd' || symbol == 'f' || symbol == 's' || symbol == 'u' ||
-            symbol == '%');
+            symbol == '%' || symbol == 'x' || symbol == 'X' || symbol == 'o' || symbol == 'p' ||
+            symbol == 'e' || symbol == 'E');
 }
 
-static bool is_numerical_converter(converter_type converter) {
-    return (converter == Integer || converter == Unsigned || converter == Float);
+bool is_integer_converter(converter_type converter) {
+    return (converter == Integer || converter == Unsigned);
+}
+
+static bool is_float_converter(converter_type converter) {
+    return (converter == Float || converter == Exponent || converter == ExponentUpper);
 }
 
 static void read_flags(char const *string, int *position, flags_type *flags) {
@@ -77,15 +82,15 @@ static bool read_length(char const *string, int *position, length_type *length) 
     bool valid_symbol = true;
     switch (string[*position]) {
         case 'h':
-            *length = Short;
+            *length = ShortInteger;
             (*position)++;
             break;
         case 'l':
-            *length = Long;
+            *length = LongInteger;
             (*position)++;
             break;
         case 'L':
-            *length = LongLong;
+            *length = LongDouble;
             (*position)++;
             break;
         default:
@@ -98,28 +103,33 @@ static bool read_length(char const *string, int *position, length_type *length) 
 
 static bool read_converter(char const *string, int *position, converter_type *converter) {
     bool valid_symbol = true;
-    switch (string[*position]) {
-        case 'c':
-            *converter = Char;
-            break;
-        case 'd':
-            *converter = Integer;
-            break;
-        case 'f':
-            *converter = Float;
-            break;
-        case 's':
-            *converter = String;
-            break;
-        case 'u':
-            *converter = Unsigned;
-            break;
-        case '%':
-            *converter = Percent;
-            break;
-        default:
-            valid_symbol = false;
-            break;
+
+    if (string[*position] == 'c') {
+        *converter = Char;
+    } else if (string[*position] == 'd') {
+        *converter = Integer;
+    } else if (string[*position] == 'f') {
+        *converter = Float;
+    } else if (string[*position] == 's') {
+        *converter = String;
+    } else if (string[*position] == 'u') {
+        *converter = Unsigned;
+    } else if (string[*position] == '%') {
+        *converter = Percent;
+    } else if (string[*position] == 'x') {
+        *converter = Hexadecimal;
+    } else if (string[*position] == 'X') {
+        *converter = HexadecimalUpper;
+    } else if (string[*position] == 'o') {
+        *converter = Octal;
+    } else if (string[*position] == 'p') {
+        *converter = Pointer;
+    } else if (string[*position] == 'e') {
+        *converter = Exponent;
+    } else if (string[*position] == 'E') {
+        *converter = ExponentUpper;
+    } else {
+        valid_symbol = false;
     }
     if (valid_symbol) (*position)++;
 
@@ -139,12 +149,15 @@ static void reset_format_specifier(format_specifier_type *specifier) {
 static void normalize_format_specifier(format_specifier_type *specifier) {
     if (specifier->flags.left) specifier->flags.zero = false;
     if (specifier->precision >= 0) {
-        if (is_numerical_converter(specifier->converter)) {
+        if (is_integer_converter(specifier->converter)) {
             specifier->flags.zero = false;
         }
     }
     if (specifier->flags.sign) {
         specifier->flags.space = false;
+    }
+    if (is_float_converter(specifier->converter) && specifier->precision == -1) {
+        specifier->precision = 6;
     }
 }
 

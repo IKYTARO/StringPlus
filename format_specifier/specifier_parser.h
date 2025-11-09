@@ -12,9 +12,23 @@ typedef struct {
     bool hash;
 } flags_type;
 
-typedef enum { NoneLen, Short, Long, LongLong } length_type;
+typedef enum { NoneLen, ShortInteger, LongInteger, LongDouble } length_type;
 
-typedef enum { NoneConv, Char, Integer, Float, String, Unsigned, Percent } converter_type;
+typedef enum {
+    NoneConv,
+    Char,
+    Integer,
+    Float,
+    String,
+    Unsigned,
+    Percent,
+    Hexadecimal,
+    HexadecimalUpper,
+    Octal,
+    Pointer,
+    Exponent,
+    ExponentUpper
+} converter_type;
 
 typedef struct {
     flags_type flags;
@@ -23,6 +37,8 @@ typedef struct {
     length_type length;
     converter_type converter;
 } format_specifier_type;
+
+bool is_integer_converter(converter_type converter);
 
 format_specifier_type *make_format_specifier();
 

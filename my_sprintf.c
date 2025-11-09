@@ -15,10 +15,15 @@ int my_sprintf(char *str, char const *format, ...) {
         if (format[position] == '%') {
             position++;
             if (parse_format_specifier(format, &position, arg_pointer, specifier)) {
-                char formatted_string[BUFF_MAX_SIZE];
+                char formatted_string[BUFF_MAX_SIZE] = {0};
                 int written_chars = handle_format_specifier(specifier, arg_pointer, formatted_string);
-                my_strncpy(str, formatted_string, written_chars);
-                str += written_chars;
+                if (written_chars != ERROR_RETURN) {
+                    str += copy_buff(str, formatted_string, written_chars);
+                } else {
+                    return ERROR_RETURN;
+                }
+            } else {
+                return ERROR_RETURN;
             }
         } else {
             *str = format[position];
