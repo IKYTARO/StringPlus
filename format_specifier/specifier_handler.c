@@ -4,6 +4,7 @@
 
 #include "../my_string.h"
 
+/* Копирование буфера */
 int copy_buff(char *dest, char const *src, int size) {
     for (int i = 0; i < size; i++) {
         dest[i] = src[i];
@@ -11,43 +12,52 @@ int copy_buff(char *dest, char const *src, int size) {
     return size;
 }
 
+/* numerical_type - тип для представления числовых значений */
 typedef struct {
-    unsigned long long integer_part;
-    unsigned long long fractional_part;
-    int fractional_size;
-    bool is_negative;
-    char sign;
+    unsigned long long integer_part;     // целая часть
+    unsigned long long fractional_part;  // дробная часть
+    int fractional_size;                 // размер дробной части
+    bool is_negative;                    // флаг отрицательного числа
+    char sign;                           // знак ('+', '-', ' ', '\0')
 } numerical_type;
 
+/* exponent_type - тип для представления числа в экспоненциальной нотации */
 typedef struct {
-    numerical_type mantissa;
-    int exponent;
-    char symbol;
+    numerical_type mantissa;  // мантисса
+    int exponent;             // экспонента
+    char symbol;              // символ ('e' или 'E')
 } exponent_type;
 
+/* Извлечение аргументов из va_list */
 static long long extract_integer_value(format_specifier_type const *specifier, va_list arg_pointer);
 static unsigned long long extract_unsigned_value(format_specifier_type const *specifier, va_list arg_pointer);
 static long double extract_float_value(format_specifier_type const *specifier, va_list arg_pointer);
 
+/* Разбиение числа на целую и дробную часть с учетом точности */
 static void set_float_parts(long double value, format_specifier_type const *specifier,
                             numerical_type *argument);
 
+/* Проверка краевых случаев - nan, inf */
 static bool is_special_float(long double value);
 
+/* Определение знака числа */
 static void set_sign(format_specifier_type const *specifier, bool is_negative, char *sign);
 static void set_argument_sign(format_specifier_type const *specifier, numerical_type *argument);
 
+/* Подготовка числовых аргументов */
 static numerical_type prepare_integer_argument(format_specifier_type const *specifier, va_list arg_pointer);
 static numerical_type prepare_float_argument(format_specifier_type const *specifier, long double value);
 static numerical_type prepare_pointer_argument(unsigned long addr);
 static exponent_type prepare_exponent_argument(format_specifier_type const *specifier,
                                                long double argument_value);
 
+/* Преобразование чисел в строки */
 static int integer_to_string_base(char *buffer, unsigned long long value,
                                   format_specifier_type const *specifier, int base, bool is_upper);
 static int float_to_string(char *buffer, numerical_type argument, format_specifier_type const *specifier);
 static int exponent_to_string(char *buffer, exponent_type argument, format_specifier_type const *specifier);
 
+/* Применение элементов форматирования */
 static int apply_sign(char *buffer, char sign);
 static int apply_comma(char *buffer, numerical_type argument, format_specifier_type const *specifier);
 static int apply_prefix(char *buffer, format_specifier_type const *specifier);
@@ -55,6 +65,7 @@ static int apply_integer_precision(char *buffer, int position, const char *value
                                    format_specifier_type const *specifier);
 static int apply_padding(char *buffer, char padding, int padding_size);
 
+/* Основное форматирование */
 static int apply_string_formatting(char *buffer, const char *string, my_size_t string_length,
                                    format_specifier_type const *specifier);
 static int apply_integer_base_formatting(char *buffer, const char *value_string, int digits_count,
@@ -62,11 +73,14 @@ static int apply_integer_base_formatting(char *buffer, const char *value_string,
 static int apply_float_formatting(char *buffer, const char *argument_string, int argument_length,
                                   format_specifier_type const *specifier);
 
+/* Специализированные обработчики для указателей */
 static int handle_null_pointer(char *buffer, format_specifier_type const *specifier);
 static int handle_valid_pointer(char *buffer, format_specifier_type const *specifier, unsigned long addr);
 
+/* Обработка краевых значений float (nan, inf) */
 static int handle_special_float(long double value, format_specifier_type const *specifier, char *buffer);
 
+/* Обработчики для каждого типа спецификатора */
 static int handle_percent(format_specifier_type const *specifier, va_list arg_pointer, char *buffer);
 static int handle_char_type(format_specifier_type const *specifier, va_list arg_pointer, char *buffer);
 static int handle_integer_base_type(format_specifier_type const *specifier, va_list arg_pointer,
@@ -76,8 +90,10 @@ static int handle_string_type(format_specifier_type const *specifier, va_list ar
 static int handle_pointer_type(format_specifier_type const *specifier, va_list arg_pointer, char *buffer);
 static int handle_exponent_type(format_specifier_type const *specifier, va_list arg_pointer, char *buffer);
 
+/* Тип указателя на функцию-обработчик */
 typedef int (*specifier_handler)(format_specifier_type const *specifier, va_list arg_pointer, char *buffer);
 
+/* Диспетчер обработчиков */
 static specifier_handler get_handler_by_specifier(format_specifier_type const *specifier);
 
 int handle_format_specifier(format_specifier_type const *specifier, va_list arg_pointer, char *buffer) {
