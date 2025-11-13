@@ -17,7 +17,7 @@ TESTSRC = $(wildcard $(TEST_DIR)/*.c $(TEST_DIR)/sprintf_tests/*.c)
 TEST_TARGET = run_tests
 TESTING_LOG = test_report.log
 
-STATIC_LIB = s21_string.a
+STATIC_LIB = my_string.a
 
 $(OBJ_DIR)/%.o: %.c
 	$(shell mkdir -p $(OBJ_DIR))
